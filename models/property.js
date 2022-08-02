@@ -13,7 +13,11 @@ const propertySchema = new Schema({
     property_quantity: {
         type: Number,
         required: true
-    }
+    },
+    images: [{
+        type: String,
+        required: false,
+        ref: 'PropertyImages' }],
 });
 
 module.exports = mongoose.model('Property', propertySchema);

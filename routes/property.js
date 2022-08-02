@@ -81,6 +81,7 @@ router.post("/", async (req, res) => {
     property_description: req.body.property_description,
     property_cost: req.body.property_cost,
     property_quantity: req.body.property_quantity,
+    images: req.body.image
   });
 
   //const tokenContents = jwt.verify(req.body.token, `${process.env.JWTPRIVATEKEY}`);
@@ -191,6 +192,38 @@ router.delete("/delete-property/:id", async (req, res) => {
       message: err,
     });
   }
+});
+
+router.post("/return-images", async (req, res) => {
+  //Grab the property IDs from the array
+  const property_to_get_images_from = await Property.find({ _id: req.body.property_id_to_get })
+      .select("images")
+      .lean();
+
+  if (property_to_get_images_from !== undefined) {
+
+    const image_array = property_to_get_images_from[0].images;
+
+    //Print image array to console
+    console.log(image_array);
+
+    //Send array of properties to render client-side
+    res.json(image_array);
+  }
+  else {
+    console.log("User has no images to load...");
+  }
+});
+
+router.post("/add-a-image", async (req, res) => {
+  //Grab the property IDs from the array
+  const property_to_get_images_from = await Property.findOneAndUpdate(
+      {_id: req.body.property_id_to_add},
+      {
+          $addToSet: { images: req.body.image_id_to_add}
+      });
+
+    console.log(property_to_get_images_from);
 });
 
 module.exports = router;
